@@ -1,6 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
-import { Shield, Accessibility, Briefcase, ArrowDown } from "lucide-react";
+import { Shield, Accessibility, Briefcase, MapPin, Scale, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import IntakeForm from "@/components/IntakeForm";
 import heroImage from "@/assets/hero-community.jpg";
@@ -35,6 +35,18 @@ const Index = () => {
       title: t("Workplace Rights", "Derechos Laborales"),
       desc: t("Understand your rights as a worker in Canada", "Entiende tus derechos como trabajador en Canadá"),
       path: "/workplace-rights",
+    },
+    {
+      emoji: "🗺️",
+      title: t("Organizations", "Organizaciones"),
+      desc: t("Find community support and legal clinics near you", "Encuentra apoyo comunitario y clínicas legales cerca de ti"),
+      path: "/organizations",
+    },
+    {
+      emoji: "⚖️",
+      title: t("Lawyers", "Abogados"),
+      desc: t("Connect with legal professionals who speak your language", "Conéctate con profesionales legales que hablan tu idioma"),
+      path: "/lawyers",
     },
   ];
 
@@ -83,7 +95,7 @@ const Index = () => {
         </motion.div>
 
         {/* Pillar Cards */}
-        <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-6xl gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {pillars.map((p, i) => (
             <motion.div
               key={i}
@@ -93,13 +105,13 @@ const Index = () => {
             >
               <Link
                 to={p.path}
-                className="group block rounded-xl border bg-card p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group flex h-full flex-col rounded-xl border bg-card p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-2xl">
                   {p.emoji}
                 </div>
                 <h3 className="mb-2 text-lg font-bold">{p.title}</h3>
-                <p className="text-sm text-muted-foreground">{p.desc}</p>
+                <p className="flex-1 text-sm text-muted-foreground">{p.desc}</p>
                 <span className="mt-3 inline-block text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   {t("Learn more →", "Saber más →")}
                 </span>
