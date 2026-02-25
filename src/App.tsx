@@ -12,7 +12,8 @@ import Index from "./pages/Index";
 import AntiDiscrimination from "./pages/AntiDiscrimination";
 import DisabilityRights from "./pages/DisabilityRights";
 import WorkplaceRights from "./pages/WorkplaceRights";
-import Resources from "./pages/Resources";
+import Organizations from "./pages/Organizations";
+import Lawyers from "./pages/Lawyers";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -34,7 +35,8 @@ const App = () => (
                   <Route path="/anti-discrimination" element={<AntiDiscrimination />} />
                   <Route path="/disability-rights" element={<DisabilityRights />} />
                   <Route path="/workplace-rights" element={<WorkplaceRights />} />
-                  <Route path="/resources" element={<Resources />} />
+                  <Route path="/organizations" element={<Organizations />} />
+                  <Route path="/lawyers" element={<Lawyers />} />
                   <Route path="/about" element={<About />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
