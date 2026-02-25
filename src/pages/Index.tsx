@@ -1,6 +1,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { Shield, Accessibility, Briefcase, ArrowDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import IntakeForm from "@/components/IntakeForm";
 import heroImage from "@/assets/hero-community.jpg";
 
@@ -19,18 +20,21 @@ const Index = () => {
       emoji: "🛡️",
       title: t("Anti-Discrimination", "Anti-Discriminación"),
       desc: t("Know your protections under Canadian law", "Conoce tus protecciones bajo la ley canadiense"),
+      path: "/anti-discrimination",
     },
     {
       icon: <Accessibility className="h-8 w-8 text-primary" />,
       emoji: "♿",
       title: t("Disability Rights", "Derechos de Discapacidad"),
       desc: t("Access the supports and accommodations you deserve", "Accede a los apoyos y adaptaciones que mereces"),
+      path: "/disability-rights",
     },
     {
       icon: <Briefcase className="h-8 w-8 text-primary" />,
       emoji: "💼",
       title: t("Workplace Rights", "Derechos Laborales"),
       desc: t("Understand your rights as a worker in Canada", "Entiende tus derechos como trabajador en Canadá"),
+      path: "/workplace-rights",
     },
   ];
 
@@ -86,13 +90,20 @@ const Index = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i, duration: 0.5 }}
-              className="rounded-xl border bg-card p-6 text-center shadow-md transition-shadow hover:shadow-lg"
             >
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-2xl">
-                {p.emoji}
-              </div>
-              <h3 className="mb-2 text-lg font-bold">{p.title}</h3>
-              <p className="text-sm text-muted-foreground">{p.desc}</p>
+              <Link
+                to={p.path}
+                className="group block rounded-xl border bg-card p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-2xl">
+                  {p.emoji}
+                </div>
+                <h3 className="mb-2 text-lg font-bold">{p.title}</h3>
+                <p className="text-sm text-muted-foreground">{p.desc}</p>
+                <span className="mt-3 inline-block text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  {t("Learn more →", "Saber más →")}
+                </span>
+              </Link>
             </motion.div>
           ))}
         </div>
