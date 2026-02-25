@@ -1,7 +1,9 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Search, Phone, Globe, MapPin, Star, Mail } from "lucide-react";
+
+const ResourceMap = lazy(() => import("@/components/ResourceMap"));
 
 interface Resource {
   name: string;
@@ -141,6 +143,11 @@ const Resources = () => {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-4xl">
         <h1 className="mb-2 text-3xl font-extrabold md:text-4xl">{t("Help Is Closer Than You Think", "La Ayuda Está Más Cerca de lo que Piensas")}</h1>
         <p className="mb-8 text-lg text-muted-foreground">{t("Find legal clinics, community organizations, and reporting lines near you.", "Encuentra clínicas legales, organizaciones comunitarias y líneas de reporte cerca de ti.")}</p>
+
+        {/* Interactive Map */}
+        <Suspense fallback={<div className="mb-12 h-[600px] animate-pulse rounded-xl bg-muted" />}>
+          <ResourceMap />
+        </Suspense>
 
         {/* Search */}
         <div className="relative mb-6">
