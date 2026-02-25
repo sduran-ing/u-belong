@@ -9,7 +9,8 @@ const navItems = [
 { path: "/anti-discrimination", labelEn: "Anti-Discrimination", labelEs: "Anti-Discriminación" },
 { path: "/disability-rights", labelEn: "Disability Rights", labelEs: "Derechos de Discapacidad" },
 { path: "/workplace-rights", labelEn: "Workplace Rights", labelEs: "Derechos Laborales" },
-{ path: "/resources", labelEn: "Resources", labelEs: "Recursos" },
+{ path: "/organizations", labelEn: "Organizations", labelEs: "Organizaciones" },
+{ path: "/lawyers", labelEn: "Lawyers", labelEs: "Abogados" },
 { path: "/about", labelEn: "About Us", labelEs: "Sobre Nosotros" }];
 
 

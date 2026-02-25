@@ -33,7 +33,8 @@ const Footer = () => {
               <Link to="/anti-discrimination" className="text-muted-foreground transition-colors hover:text-primary">{t("Anti-Discrimination", "Anti-Discriminación")}</Link>
               <Link to="/disability-rights" className="text-muted-foreground transition-colors hover:text-primary">{t("Disability Rights", "Derechos de Discapacidad")}</Link>
               <Link to="/workplace-rights" className="text-muted-foreground transition-colors hover:text-primary">{t("Workplace Rights", "Derechos Laborales")}</Link>
-              <Link to="/resources" className="text-muted-foreground transition-colors hover:text-primary">{t("Resources", "Recursos")}</Link>
+              <Link to="/organizations" className="text-muted-foreground transition-colors hover:text-primary">{t("Organizations", "Organizaciones")}</Link>
+              <Link to="/lawyers" className="text-muted-foreground transition-colors hover:text-primary">{t("Lawyers", "Abogados")}</Link>
               <Link to="/about" className="text-muted-foreground transition-colors hover:text-primary">{t("About Us", "Sobre Nosotros")}</Link>
             </div>
           </div>
