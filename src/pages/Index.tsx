@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Shield, Accessibility, Briefcase, MapPin, Scale, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import IntakeForm from "@/components/IntakeForm";
+import AIAssistant from "@/components/AIAssistant";
 import heroImage from "@/assets/hero-community.jpg";
 
 const fadeIn = {
@@ -125,6 +126,9 @@ const Index = () => {
       <section id="intake" className="container mx-auto px-4 pb-20">
         <IntakeForm />
       </section>
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 };
