@@ -1,11 +1,10 @@
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useState, useEffect, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useState, useEffect, useRef, useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Search, Phone, Globe, MapPin, Clock } from "lucide-react";
 
-// Fix default marker icon issue with webpack/vite
+// Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
@@ -39,7 +38,6 @@ const categoryColors: Record<string, { color: string; label: string; labelEs: st
 };
 
 const mapResources: MapResource[] = [
-  // Ontario
   { name: "Parkdale Community Legal Services", nameEs: "Servicios Legales Comunitarios de Parkdale", address: "1266 Queen St W", city: "Toronto", province: "ON", phone: "416-531-2411", url: "", category: "Legal Clinics", languages: ["English", "Spanish"], hours: "Mon-Fri 9AM-5PM", lat: 43.6387, lng: -79.4280 },
   { name: "Centre for Spanish Speaking Peoples", nameEs: "Centro para Personas de Habla Hispana", address: "2141 Jane St", city: "Toronto", province: "ON", phone: "416-533-8545", url: "", category: "Settlement Agencies", languages: ["English", "Spanish"], hours: "Mon-Fri 9AM-5PM", lat: 43.6890, lng: -79.5040 },
   { name: "FCJ Refugee Centre", nameEs: "Centro de Refugiados FCJ", address: "208 Oakwood Ave", city: "Toronto", province: "ON", phone: "416-469-9754", url: "", category: "NGOs", languages: ["English", "Spanish", "French"], hours: "Mon-Fri 9AM-5PM", lat: 43.6780, lng: -79.4280 },
@@ -49,21 +47,15 @@ const mapResources: MapResource[] = [
   { name: "Sojourn House", nameEs: "Casa Sojourn", address: "101 Ontario St", city: "Toronto", province: "ON", phone: "416-864-9136", url: "", category: "Shelters & Crisis", languages: ["English"], hours: "24/7", lat: 43.6580, lng: -79.3640 },
   { name: "Workers' Action Centre", nameEs: "Centro de Acción para Trabajadores", address: "720 Spadina Ave", city: "Toronto", province: "ON", phone: "416-531-0778", url: "", category: "Workers' Rights", languages: ["English", "Spanish"], hours: "Mon-Fri 10AM-5PM", lat: 43.6640, lng: -79.4040 },
   { name: "Legal Aid Ontario - Ottawa", nameEs: "Ayuda Legal Ontario - Ottawa", address: "73 Albert St", city: "Ottawa", province: "ON", phone: "613-238-7931", url: "", category: "Legal Clinics", languages: ["English", "French"], hours: "Mon-Fri 8:30AM-5PM", lat: 45.4208, lng: -75.6990 },
-  // British Columbia
   { name: "MOSAIC", nameEs: "MOSAIC", address: "1720 Grant St", city: "Vancouver", province: "BC", phone: "604-254-9626", url: "https://mosaicbc.org", category: "Settlement Agencies", languages: ["English", "Spanish", "Mandarin"], hours: "Mon-Fri 9AM-5PM", lat: 49.2764, lng: -123.0650 },
   { name: "Access Pro Bono", nameEs: "Access Pro Bono", address: "300-1140 W Pender St", city: "Vancouver", province: "BC", phone: "604-878-7400", url: "https://accessprobono.ca", category: "Legal Clinics", languages: ["English"], hours: "Mon-Fri 9AM-4PM", lat: 49.2877, lng: -123.1180 },
   { name: "Disability Alliance BC", nameEs: "Alianza de Discapacidad BC", address: "204-456 W Broadway", city: "Vancouver", province: "BC", phone: "604-875-0188", url: "https://disabilityalliancebc.org", category: "Disability Support", languages: ["English"], hours: "Mon-Fri 9AM-4PM", lat: 49.2635, lng: -123.1150 },
-  // Quebec
   { name: "Commission des droits de la personne", nameEs: "Comisión de Derechos de la Persona", address: "360 rue Saint-Jacques", city: "Montréal", province: "QC", phone: "514-873-5146", url: "", category: "Government Services", languages: ["French", "English"], hours: "Mon-Fri 8:30AM-4:30PM", lat: 45.5020, lng: -73.5582 },
   { name: "CARI St-Laurent", nameEs: "CARI St-Laurent", address: "1595 boul. de l'Avenir", city: "Montréal", province: "QC", phone: "514-748-2007", url: "", category: "Settlement Agencies", languages: ["French", "English", "Spanish"], hours: "Mon-Fri 8:30AM-4:30PM", lat: 45.5120, lng: -73.6710 },
-  // Alberta
   { name: "Calgary Legal Guidance", nameEs: "Guía Legal de Calgary", address: "840 7 Ave SW", city: "Calgary", province: "AB", phone: "403-234-9266", url: "https://clg.ab.ca", category: "Legal Clinics", languages: ["English"], hours: "Mon-Fri 8:30AM-4:30PM", lat: 51.0456, lng: -114.0780 },
   { name: "Action for Healthy Communities", nameEs: "Acción para Comunidades Saludables", address: "10578 113 St NW", city: "Edmonton", province: "AB", phone: "780-421-2870", url: "", category: "Settlement Agencies", languages: ["English", "Spanish", "French"], hours: "Mon-Fri 9AM-4:30PM", lat: 53.5390, lng: -113.5110 },
-  // Manitoba
   { name: "Manitoba Interfaith Immigration Council", nameEs: "Consejo Interreligioso de Inmigración de Manitoba", address: "400 Edmonton St", city: "Winnipeg", province: "MB", phone: "204-977-1000", url: "", category: "Settlement Agencies", languages: ["English", "French"], hours: "Mon-Fri 8:30AM-4:30PM", lat: 49.8850, lng: -97.1370 },
-  // Nova Scotia
   { name: "Halifax Refugee Clinic", nameEs: "Clínica de Refugiados de Halifax", address: "6169 Quinpool Rd", city: "Halifax", province: "NS", phone: "902-422-6736", url: "", category: "Legal Clinics", languages: ["English", "French"], hours: "Mon-Fri 9AM-5PM", lat: 44.6440, lng: -63.5930 },
-  // Saskatchewan
   { name: "Regina Open Door Society", nameEs: "Sociedad Puertas Abiertas de Regina", address: "1855 Smith St", city: "Regina", province: "SK", phone: "306-352-3500", url: "", category: "Settlement Agencies", languages: ["English"], hours: "Mon-Fri 8:30AM-4:30PM", lat: 50.4540, lng: -104.6110 },
 ];
 
@@ -101,42 +93,36 @@ const provinceCenters: Record<string, { lat: number; lng: number; zoom: number }
   YT: { lat: 64.28, lng: -135.0, zoom: 5 },
 };
 
-const mapCategories = [
-  "All",
-  "Legal Clinics",
-  "Settlement Agencies",
-  "NGOs",
-  "Government Services",
-  "Disability Support",
-  "Workers' Rights",
-  "Shelters & Crisis",
-];
+const mapCategories = ["All", "Legal Clinics", "Settlement Agencies", "NGOs", "Government Services", "Disability Support", "Workers' Rights", "Shelters & Crisis"];
+
+const postalMap: Record<string, { lat: number; lng: number }> = {
+  A: { lat: 47.56, lng: -52.71 }, B: { lat: 44.65, lng: -63.57 }, C: { lat: 46.24, lng: -63.13 },
+  E: { lat: 46.5, lng: -66.16 }, G: { lat: 46.81, lng: -71.21 }, H: { lat: 45.50, lng: -73.57 },
+  J: { lat: 45.53, lng: -73.6 }, K: { lat: 45.42, lng: -75.7 }, L: { lat: 43.65, lng: -79.38 },
+  M: { lat: 43.65, lng: -79.38 }, N: { lat: 43.0, lng: -81.27 }, P: { lat: 46.49, lng: -81.0 },
+  R: { lat: 49.88, lng: -97.14 }, S: { lat: 50.45, lng: -104.62 }, T: { lat: 51.05, lng: -114.07 },
+  V: { lat: 49.28, lng: -123.12 }, X: { lat: 62.45, lng: -114.37 }, Y: { lat: 60.72, lng: -135.05 },
+};
 
 function createColoredIcon(color: string) {
   return L.divIcon({
-    className: "custom-marker",
-    html: `<div style="background:${color};width:24px;height:24px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -14],
+    className: "",
+    html: `<div style="background:${color};width:22px;height:22px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -13],
   });
-}
-
-function MapController({ center, zoom }: { center: [number, number]; zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo(center, zoom, { duration: 1.2 });
-  }, [center, zoom, map]);
-  return null;
 }
 
 const ResourceMap = () => {
   const { t } = useLanguage();
+  const mapRef = useRef<L.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const markersRef = useRef<L.LayerGroup | null>(null);
+
   const [selectedProvince, setSelectedProvince] = useState("ALL");
   const [postalCode, setPostalCode] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-  const [mapCenter, setMapCenter] = useState<[number, number]>([56.13, -106.35]);
-  const [mapZoom, setMapZoom] = useState(4);
 
   const filteredResources = useMemo(() => {
     return mapResources.filter((r) => {
@@ -146,59 +132,69 @@ const ResourceMap = () => {
     });
   }, [selectedProvince, activeCategory]);
 
+  // Initialize map
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    const map = L.map(mapContainerRef.current).setView([56.13, -106.35], 4);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    markersRef.current = L.layerGroup().addTo(map);
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  // Update markers when filters change
+  useEffect(() => {
+    if (!mapRef.current || !markersRef.current) return;
+    markersRef.current.clearLayers();
+
+    filteredResources.forEach((r) => {
+      const color = categoryColors[r.category]?.color || "#6B7280";
+      const catLabel = categoryColors[r.category];
+      const marker = L.marker([r.lat, r.lng], { icon: createColoredIcon(color) });
+      marker.bindPopup(`
+        <div style="min-width:200px">
+          <strong>${r.name}</strong><br/>
+          <span style="font-size:12px;color:#666">${r.address}, ${r.city}, ${r.province}</span><br/>
+          ${r.phone ? `<a href="tel:${r.phone}" style="font-size:12px">📞 ${r.phone}</a><br/>` : ""}
+          ${r.url ? `<a href="${r.url}" target="_blank" style="font-size:12px">🌐 Website</a><br/>` : ""}
+          <span style="font-size:11px;color:#666">🗣️ ${r.languages.join(", ")}</span><br/>
+          <span style="font-size:11px;color:#666">🕐 ${r.hours}</span><br/>
+          <span style="display:inline-block;margin-top:4px;background:${color};color:white;padding:1px 8px;border-radius:10px;font-size:10px">${catLabel?.label || r.category}</span>
+        </div>
+      `);
+      marker.addTo(markersRef.current!);
+    });
+  }, [filteredResources]);
+
   const handleProvinceChange = (prov: string) => {
     setSelectedProvince(prov);
     const pc = provinceCenters[prov] || provinceCenters.ALL;
-    setMapCenter([pc.lat, pc.lng]);
-    setMapZoom(pc.zoom);
+    mapRef.current?.flyTo([pc.lat, pc.lng], pc.zoom, { duration: 1.2 });
   };
 
   const handlePostalSearch = () => {
     if (!postalCode.trim()) return;
-    // Mock postal code geocoding — map first letter to approximate region
-    const firstChar = postalCode.trim().toUpperCase()[0];
-    const postalMap: Record<string, { lat: number; lng: number }> = {
-      A: { lat: 47.56, lng: -52.71 }, // NL
-      B: { lat: 44.65, lng: -63.57 }, // NS
-      C: { lat: 46.24, lng: -63.13 }, // PE
-      E: { lat: 46.5, lng: -66.16 }, // NB
-      G: { lat: 46.81, lng: -71.21 }, // QC east
-      H: { lat: 45.50, lng: -73.57 }, // Montreal
-      J: { lat: 45.53, lng: -73.6 }, // QC west
-      K: { lat: 45.42, lng: -75.7 }, // ON east
-      L: { lat: 43.65, lng: -79.38 }, // ON central
-      M: { lat: 43.65, lng: -79.38 }, // Toronto
-      N: { lat: 43.0, lng: -81.27 }, // ON southwest
-      P: { lat: 46.49, lng: -81.0 }, // ON north
-      R: { lat: 49.88, lng: -97.14 }, // MB
-      S: { lat: 50.45, lng: -104.62 }, // SK
-      T: { lat: 51.05, lng: -114.07 }, // AB
-      V: { lat: 49.28, lng: -123.12 }, // BC
-      X: { lat: 62.45, lng: -114.37 }, // NT/NU
-      Y: { lat: 60.72, lng: -135.05 }, // YT
-    };
-    const coords = postalMap[firstChar];
+    const coords = postalMap[postalCode.trim().toUpperCase()[0]];
     if (coords) {
-      setMapCenter([coords.lat, coords.lng]);
-      setMapZoom(11);
+      mapRef.current?.flyTo([coords.lat, coords.lng], 11, { duration: 1.2 });
     }
   };
 
   return (
     <section className="mb-12">
-      <h2 className="mb-2 text-2xl font-bold">
-        {t("Find Help Near You", "Encuentra Ayuda Cerca de Ti")}
-      </h2>
-      <p className="mb-6 text-muted-foreground">
-        {t(
-          "Community organizations, legal clinics, and support centres across Canada",
-          "Organizaciones comunitarias, clínicas legales y centros de apoyo en todo Canadá"
-        )}
-      </p>
+      <h2 className="mb-2 text-2xl font-bold">{t("Find Help Near You", "Encuentra Ayuda Cerca de Ti")}</h2>
+      <p className="mb-6 text-muted-foreground">{t("Community organizations, legal clinics, and support centres across Canada", "Organizaciones comunitarias, clínicas legales y centros de apoyo en todo Canadá")}</p>
 
       {/* Filters */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        {/* Province dropdown */}
         <div className="relative">
           <select
             value={selectedProvince}
@@ -206,31 +202,22 @@ const ResourceMap = () => {
             className="w-full appearance-none rounded-xl border bg-card px-4 py-2.5 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary sm:w-auto"
           >
             {provinces.map((p) => (
-              <option key={p.value} value={p.value}>
-                {t(p.label, p.labelEs)}
-              </option>
+              <option key={p.value} value={p.value}>{t(p.label, p.labelEs)}</option>
             ))}
           </select>
           <MapPin className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
         </div>
-
-        {/* Postal code search */}
         <div className="flex gap-2">
-          <div className="relative flex-1 sm:flex-initial">
-            <input
-              type="text"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handlePostalSearch()}
-              placeholder={t("Enter postal code", "Código postal")}
-              maxLength={7}
-              className="w-full rounded-xl border bg-background py-2.5 pl-4 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary sm:w-48"
-            />
-          </div>
-          <button
-            onClick={handlePostalSearch}
-            className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+          <input
+            type="text"
+            value={postalCode}
+            onChange={(e) => setPostalCode(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handlePostalSearch()}
+            placeholder={t("Enter postal code", "Código postal")}
+            maxLength={7}
+            className="w-full rounded-xl border bg-background py-2.5 pl-4 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary sm:w-48"
+          />
+          <button onClick={handlePostalSearch} className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             <Search size={16} />
           </button>
         </div>
@@ -242,94 +229,34 @@ const ResourceMap = () => {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-              activeCategory === cat
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-foreground hover:bg-primary/10"
-            }`}
+            className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${activeCategory === cat ? "bg-primary text-primary-foreground" : "bg-muted text-foreground hover:bg-primary/10"}`}
           >
             {cat !== "All" && categoryColors[cat] ? `${categoryColors[cat].emoji} ` : ""}
-            {cat === "All"
-              ? t("All", "Todos")
-              : t(categoryColors[cat]?.label || cat, categoryColors[cat]?.labelEs || cat)}
+            {cat === "All" ? t("All", "Todos") : t(categoryColors[cat]?.label || cat, categoryColors[cat]?.labelEs || cat)}
           </button>
         ))}
       </div>
 
       {/* Map */}
-      <div className="overflow-hidden rounded-xl border shadow-md" style={{ height: "450px" }}>
-        <MapContainer
-          center={mapCenter}
-          zoom={mapZoom}
-          scrollWheelZoom={true}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <MapController center={mapCenter} zoom={mapZoom} />
-          {filteredResources.map((r, i) => (
-            <Marker
-              key={i}
-              position={[r.lat, r.lng]}
-              icon={createColoredIcon(categoryColors[r.category]?.color || "#6B7280")}
-            >
-              <Popup>
-                <div className="min-w-[200px]">
-                  <p className="!mb-1 !mt-0 font-bold text-foreground">{t(r.name, r.nameEs)}</p>
-                  <p className="!my-0 text-xs text-muted-foreground">{r.address}, {r.city}, {r.province}</p>
-                  {r.phone && (
-                    <p className="!my-0.5 text-xs">
-                      <a href={`tel:${r.phone}`} className="text-primary hover:underline">📞 {r.phone}</a>
-                    </p>
-                  )}
-                  {r.url && (
-                    <p className="!my-0.5 text-xs">
-                      <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">🌐 {t("Website", "Sitio Web")}</a>
-                    </p>
-                  )}
-                  <p className="!my-0.5 text-xs text-muted-foreground">🗣️ {r.languages.join(", ")}</p>
-                  <p className="!my-0.5 text-xs text-muted-foreground">🕐 {r.hours}</p>
-                  <span
-                    className="mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium text-white"
-                    style={{ background: categoryColors[r.category]?.color || "#6B7280" }}
-                  >
-                    {t(categoryColors[r.category]?.label || r.category, categoryColors[r.category]?.labelEs || r.category)}
-                  </span>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
-      </div>
+      <div ref={mapContainerRef} className="overflow-hidden rounded-xl border shadow-md" style={{ height: "450px", zIndex: 0 }} />
 
       {/* Legend */}
       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
         {Object.entries(categoryColors).map(([key, val]) => (
           <div key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span
-              className="inline-block h-3 w-3 rounded-full"
-              style={{ background: val.color }}
-            />
+            <span className="inline-block h-3 w-3 rounded-full" style={{ background: val.color }} />
             {t(val.label, val.labelEs)}
           </div>
         ))}
       </div>
 
-      {/* Filtered results list below map */}
+      {/* Card list */}
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         {filteredResources.map((r, i) => (
-          <div
-            key={i}
-            className="rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
-          >
+          <div key={i} className="rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
             <div className="mb-1 flex items-start justify-between gap-2">
               <h4 className="text-sm font-semibold">{t(r.name, r.nameEs)}</h4>
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium text-white"
-                style={{ background: categoryColors[r.category]?.color || "#6B7280" }}
-              >
+              <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium text-white" style={{ background: categoryColors[r.category]?.color || "#6B7280" }}>
                 {t(categoryColors[r.category]?.label || r.category, categoryColors[r.category]?.labelEs || r.category)}
               </span>
             </div>
