@@ -238,19 +238,6 @@ const IntakeForm = () => {
         </div>
       </div>
 
-      {/* Voice assistant placeholder */}
-      <div className="mt-8 rounded-xl border-2 border-dashed border-muted p-8 text-center">
-        <Mic className="mx-auto mb-3 text-muted-foreground" size={40} />
-        <h3 className="text-lg font-semibold text-muted-foreground">
-          🎙️ {t("Voice Assistant — Coming Soon", "Asistente de Voz — Próximamente")}
-        </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t(
-            "Soon you'll be able to describe your situation by speaking, and our AI assistant will guide you in real time.",
-            "Pronto podrás describir tu situación hablando, y nuestro asistente de IA te guiará en tiempo real."
-          )}
-        </p>
-      </div>
     </div>
   );
 };
