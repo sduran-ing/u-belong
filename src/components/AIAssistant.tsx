@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Video, Send, Mic, MicOff, VideoOff, Globe, ArrowRight } from "lucide-react";
+import { MessageCircle, Video, Send, Mic, MicOff, VideoOff, Globe, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ActionPlanDossier from "@/components/ActionPlanDossier";
 
 interface Message {
   role: "assistant" | "user";
@@ -38,6 +39,8 @@ const AIAssistant = () => {
   ]);
   const [input, setInput] = useState("");
   const [chipsUsed, setChipsUsed] = useState<Set<string>>(new Set());
+  const [dossierState, setDossierState] = useState<"hidden" | "loading" | "visible">("hidden");
+  const dossierRef = useRef<HTMLDivElement>(null);
 
   const addExchange = (userText: string) => {
     const response = CHIP_RESPONSES[userText] || DEFAULT_RESPONSE;
@@ -146,13 +149,18 @@ const AIAssistant = () => {
                   </div>
                 ))}
 
-                {/* Action Plan button after every assistant response (except welcome) */}
-                {messages.length > 1 && messages[messages.length - 1].role === "assistant" && (
+                {messages.length > 1 && messages[messages.length - 1].role === "assistant" && dossierState === "hidden" && (
                   <div className="flex justify-start">
                     <button
                       className="mt-1 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white shadow-md transition-transform hover:scale-105"
                       style={{ backgroundColor: "#E76F51" }}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setDossierState("loading");
+                        setTimeout(() => {
+                          setDossierState("visible");
+                          setTimeout(() => dossierRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+                        }, 2500);
+                      }}
                     >
                       {t("Generate My Action Plan", "Generar Mi Plan de Acción")} <ArrowRight size={16} />
                     </button>
@@ -264,6 +272,27 @@ const AIAssistant = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        {/* Loading spinner */}
+        <AnimatePresence>
+          {dossierState === "loading" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-8 flex flex-col items-center gap-3 py-8"
+            >
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm font-medium text-muted-foreground">
+                {t("Analyzing your situation...", "Analizando tu situación...")}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Dossier */}
+        <div ref={dossierRef}>
+          {dossierState === "visible" && <ActionPlanDossier />}
+        </div>
       </div>
     </section>
   );
