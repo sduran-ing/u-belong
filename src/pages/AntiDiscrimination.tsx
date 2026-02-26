@@ -1,9 +1,19 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { Home, Briefcase, HeartPulse, MessageCircle } from "lucide-react";
+import OnThisPage from "@/components/OnThisPage";
+import PageCTA from "@/components/PageCTA";
 
 const AntiDiscrimination = () => {
   const { t } = useLanguage();
+
+  const anchors = [
+    { id: "what-is", en: "What Is Discrimination?", es: "¿Qué Es la Discriminación?" },
+    { id: "laws", en: "Laws That Protect You", es: "Leyes que Te Protegen" },
+    { id: "types", en: "Common Types", es: "Tipos Comunes" },
+    { id: "what-to-do", en: "What Can You Do?", es: "¿Qué Puedes Hacer?" },
+    { id: "important", en: "Immigration Status", es: "Estatus Migratorio" },
+  ];
 
   const commonTypes = [
     { emoji: "🏠", icon: <Home size={24} />, title: t("Housing", "Vivienda"), desc: t("Landlord refuses to rent to you because of your accent or origin", "El arrendador se niega a rentarte por tu acento u origen") },
@@ -16,10 +26,11 @@ const AntiDiscrimination = () => {
     <div className="container mx-auto px-4 py-12">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl">
         <h1 className="mb-2 text-3xl font-extrabold md:text-4xl">{t("Your Right to Be Treated Equally", "Tu Derecho a Ser Tratado por Igual")}</h1>
-        <p className="mb-10 text-lg text-muted-foreground">{t("Canada's laws protect you from discrimination. Here's what you need to know.", "Las leyes de Canadá te protegen de la discriminación. Esto es lo que necesitas saber.")}</p>
+        <p className="mb-8 text-lg text-muted-foreground">{t("Canada's laws protect you from discrimination. Here's what you need to know.", "Las leyes de Canadá te protegen de la discriminación. Esto es lo que necesitas saber.")}</p>
 
-        {/* What is discrimination */}
-        <section className="mb-10 rounded-xl border bg-card p-6 shadow-md">
+        <OnThisPage items={anchors} />
+
+        <section id="what-is" className="mb-10 scroll-mt-20 rounded-xl border bg-card p-6 shadow-md">
           <h2 className="mb-3 text-xl font-bold">{t("What Is Discrimination?", "¿Qué Es la Discriminación?")}</h2>
           <p className="text-muted-foreground">
             {t(
@@ -29,8 +40,7 @@ const AntiDiscrimination = () => {
           </p>
         </section>
 
-        {/* Laws */}
-        <section className="mb-10 rounded-xl border bg-card p-6 shadow-md">
+        <section id="laws" className="mb-10 scroll-mt-20 rounded-xl border bg-card p-6 shadow-md">
           <h2 className="mb-4 text-xl font-bold">{t("What Laws Protect You?", "¿Qué Leyes Te Protegen?")}</h2>
           <div className="space-y-4">
             <div className="rounded-xl bg-primary/5 p-4">
@@ -44,8 +54,7 @@ const AntiDiscrimination = () => {
           </div>
         </section>
 
-        {/* Common Types */}
-        <section className="mb-10">
+        <section id="types" className="mb-10 scroll-mt-20">
           <h2 className="mb-4 text-xl font-bold">{t("Common Types of Discrimination Newcomers Face", "Tipos Comunes de Discriminación que Enfrentan los Recién Llegados")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {commonTypes.map((item, i) => (
@@ -58,8 +67,7 @@ const AntiDiscrimination = () => {
           </div>
         </section>
 
-        {/* What can you do */}
-        <section className="mb-10 rounded-xl border bg-card p-6 shadow-md">
+        <section id="what-to-do" className="mb-10 scroll-mt-20 rounded-xl border bg-card p-6 shadow-md">
           <h2 className="mb-4 text-xl font-bold">{t("What Can You Do?", "¿Qué Puedes Hacer?")}</h2>
           <ol className="list-inside list-decimal space-y-2 text-muted-foreground">
             <li>{t("Document what happened (dates, names, witnesses)", "Documenta lo que pasó (fechas, nombres, testigos)")}</li>
@@ -69,8 +77,7 @@ const AntiDiscrimination = () => {
           </ol>
         </section>
 
-        {/* Important notice */}
-        <section className="rounded-xl border-2 border-primary bg-primary/5 p-6">
+        <section id="important" className="scroll-mt-20 rounded-xl border-2 border-primary bg-primary/5 p-6">
           <h2 className="mb-2 text-lg font-bold text-primary">{t("Important: You Are Protected Regardless of Immigration Status", "Importante: Estás Protegido Sin Importar Tu Estatus Migratorio")}</h2>
           <p className="text-muted-foreground">
             {t(
@@ -79,6 +86,8 @@ const AntiDiscrimination = () => {
             )}
           </p>
         </section>
+
+        <PageCTA />
       </motion.div>
     </div>
   );

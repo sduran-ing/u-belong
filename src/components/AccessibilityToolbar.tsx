@@ -1,4 +1,4 @@
-import { Volume2, ZoomIn, Eye, Languages, Plus, Minus } from "lucide-react";
+import { Volume2, ZoomIn, Eye, Languages, Plus, Minus, ChevronDown } from "lucide-react";
 import { useAccessibility } from "@/contexts/AccessibilityContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const AccessibilityToolbar = () => {
   const [open, setOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const { increaseFontSize, decreaseFontSize, highContrast, toggleHighContrast, magnifier, toggleMagnifier, ttsActive, toggleTTS } = useAccessibility();
   const { lang, toggleLanguage, t } = useLanguage();
 
@@ -18,6 +19,18 @@ const AccessibilityToolbar = () => {
     { icon: <Languages size={18} />, label: lang === "en" ? "Español" : "English", active: false, onClick: toggleLanguage },
   ];
 
+  if (minimized) {
+    return (
+      <button
+        onClick={() => setMinimized(false)}
+        className="fixed bottom-6 right-6 z-50 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105"
+        aria-label="Show accessibility options"
+      >
+        <Eye size={14} />
+      </button>
+    );
+  }
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
       <AnimatePresence>
@@ -26,7 +39,7 @@ const AccessibilityToolbar = () => {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="flex flex-col gap-2 rounded-xl border bg-card p-3 shadow-xl"
+            className="mb-1 flex flex-col gap-2 rounded-xl border bg-card p-3 shadow-xl"
           >
             {buttons.map((btn, i) => (
               <button
@@ -42,6 +55,13 @@ const AccessibilityToolbar = () => {
                 <span>{btn.label}</span>
               </button>
             ))}
+            <button
+              onClick={() => { setOpen(false); setMinimized(true); }}
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+            >
+              <ChevronDown size={14} />
+              <span>{t("Minimize", "Minimizar")}</span>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,9 +1,19 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { Phone } from "lucide-react";
+import OnThisPage from "@/components/OnThisPage";
+import PageCTA from "@/components/PageCTA";
 
 const WorkplaceRights = () => {
   const { t } = useLanguage();
+
+  const anchors = [
+    { id: "basic-rights", en: "Basic Rights", es: "Derechos Básicos" },
+    { id: "common-issues", en: "Common Issues", es: "Problemas Comunes" },
+    { id: "work-permit", en: "Work Permit Protection", es: "Protección del Permiso" },
+    { id: "violations", en: "If Rights Are Violated", es: "Si Se Violan Tus Derechos" },
+    { id: "contacts", en: "Key Contacts", es: "Contactos Clave" },
+  ];
 
   const rights = [
     { emoji: "💰", title: t("Fair Pay", "Pago Justo"), desc: t("You must be paid at least minimum wage. Overtime must be compensated.", "Debes recibir al menos el salario mínimo. Las horas extras deben ser compensadas.") },
@@ -31,9 +41,11 @@ const WorkplaceRights = () => {
     <div className="container mx-auto px-4 py-12">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl">
         <h1 className="mb-2 text-3xl font-extrabold md:text-4xl">{t("You Have Rights at Work — Know Them", "Tienes Derechos en el Trabajo — Conócelos")}</h1>
-        <p className="mb-10 text-lg text-muted-foreground">{t("Whether you're on a work permit or a permanent resident, Canadian labour laws protect you.", "Ya sea que tengas un permiso de trabajo o seas residente permanente, las leyes laborales canadienses te protegen.")}</p>
+        <p className="mb-8 text-lg text-muted-foreground">{t("Whether you're on a work permit or a permanent resident, Canadian labour laws protect you.", "Ya sea que tengas un permiso de trabajo o seas residente permanente, las leyes laborales canadienses te protegen.")}</p>
 
-        <section className="mb-10">
+        <OnThisPage items={anchors} />
+
+        <section id="basic-rights" className="mb-10 scroll-mt-20">
           <h2 className="mb-4 text-xl font-bold">{t("Your Basic Rights as a Worker", "Tus Derechos Básicos como Trabajador")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {rights.map((r, i) => (
@@ -46,7 +58,7 @@ const WorkplaceRights = () => {
           </div>
         </section>
 
-        <section className="mb-10 rounded-xl border bg-card p-6 shadow-md">
+        <section id="common-issues" className="mb-10 scroll-mt-20 rounded-xl border bg-card p-6 shadow-md">
           <h2 className="mb-4 text-xl font-bold">{t("Common Issues Newcomers Face", "Problemas Comunes que Enfrentan los Recién Llegados")}</h2>
           <ul className="space-y-2">
             {issues.map((issue, i) => (
@@ -58,12 +70,12 @@ const WorkplaceRights = () => {
           </ul>
         </section>
 
-        <section className="mb-10 rounded-xl border-2 border-primary bg-primary/5 p-6">
+        <section id="work-permit" className="mb-10 scroll-mt-20 rounded-xl border-2 border-primary bg-primary/5 p-6">
           <h2 className="mb-2 text-lg font-bold text-primary">{t("Important: Your Work Permit Protects You Too", "Importante: Tu Permiso de Trabajo También Te Protege")}</h2>
           <p className="text-muted-foreground">{t("If you're on a work permit, your employer cannot threaten to revoke it. They do not control your immigration status. If your employer threatens you with deportation, this is illegal. Contact the Migrant Workers Alliance or a legal clinic immediately.", "Si tienes un permiso de trabajo, tu empleador no puede amenazar con revocarlo. Ellos no controlan tu estatus migratorio. Si tu empleador te amenaza con deportación, esto es ilegal. Contacta la Alianza de Trabajadores Migrantes o una clínica legal de inmediato.")}</p>
         </section>
 
-        <section className="mb-10 rounded-xl border bg-card p-6 shadow-md">
+        <section id="violations" className="mb-10 scroll-mt-20 rounded-xl border bg-card p-6 shadow-md">
           <h2 className="mb-4 text-xl font-bold">{t("What To Do If Your Rights Are Violated", "Qué Hacer Si Tus Derechos Son Violados")}</h2>
           <ol className="list-inside list-decimal space-y-2 text-muted-foreground">
             <li>{t("Keep records — pay stubs, schedules, texts, emails", "Guarda registros — recibos de pago, horarios, textos, correos")}</li>
@@ -73,7 +85,7 @@ const WorkplaceRights = () => {
           </ol>
         </section>
 
-        <section className="rounded-xl border bg-card p-6 shadow-md">
+        <section id="contacts" className="scroll-mt-20 rounded-xl border bg-card p-6 shadow-md">
           <h2 className="mb-4 text-xl font-bold">{t("Key Contacts", "Contactos Clave")}</h2>
           <div className="space-y-3">
             {contacts.map((c, i) => (
@@ -88,6 +100,8 @@ const WorkplaceRights = () => {
             ))}
           </div>
         </section>
+
+        <PageCTA />
       </motion.div>
     </div>
   );

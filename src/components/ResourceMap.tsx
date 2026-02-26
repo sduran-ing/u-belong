@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useState, useEffect, useRef, useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Search, Phone, Globe, MapPin, Clock } from "lucide-react";
+import { Search, Phone, Globe, MapPin, Clock, X, List, Map } from "lucide-react";
 
 // Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -123,6 +123,16 @@ const ResourceMap = () => {
   const [selectedProvince, setSelectedProvince] = useState("ALL");
   const [postalCode, setPostalCode] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [mobileView, setMobileView] = useState<"map" | "list">("map");
+
+  const hasActiveFilters = selectedProvince !== "ALL" || activeCategory !== "All";
+
+  const clearFilters = () => {
+    setSelectedProvince("ALL");
+    setActiveCategory("All");
+    const pc = provinceCenters.ALL;
+    mapRef.current?.flyTo([pc.lat, pc.lng], pc.zoom, { duration: 1.2 });
+  };
 
   const filteredResources = useMemo(() => {
     return mapResources.filter((r) => {
@@ -190,9 +200,6 @@ const ResourceMap = () => {
 
   return (
     <section className="mb-12">
-      <h2 className="mb-2 text-2xl font-bold">{t("Find Help Near You", "Encuentra Ayuda Cerca de Ti")}</h2>
-      <p className="mb-6 text-muted-foreground">{t("Community organizations, legal clinics, and support centres across Canada", "Organizaciones comunitarias, clínicas legales y centros de apoyo en todo Canadá")}</p>
-
       {/* Filters */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative">
@@ -223,8 +230,8 @@ const ResourceMap = () => {
         </div>
       </div>
 
-      {/* Category chips */}
-      <div className="mb-4 flex flex-wrap gap-2">
+      {/* Category chips + clear + count */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         {mapCategories.map((cat) => (
           <button
             key={cat}
@@ -235,13 +242,46 @@ const ResourceMap = () => {
             {cat === "All" ? t("All", "Todos") : t(categoryColors[cat]?.label || cat, categoryColors[cat]?.labelEs || cat)}
           </button>
         ))}
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 rounded-full border border-destructive/30 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
+          >
+            <X size={12} /> {t("Clear filters", "Limpiar filtros")}
+          </button>
+        )}
+      </div>
+
+      {/* Results count */}
+      <p className="mb-3 text-sm text-muted-foreground">
+        {t(`Showing ${filteredResources.length} resources`, `Mostrando ${filteredResources.length} recursos`)}
+      </p>
+
+      {/* Mobile toggle */}
+      <div className="mb-3 flex gap-2 sm:hidden">
+        <button
+          onClick={() => setMobileView("map")}
+          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors ${mobileView === "map" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}
+        >
+          <Map size={14} /> {t("Map view", "Vista de mapa")}
+        </button>
+        <button
+          onClick={() => setMobileView("list")}
+          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-medium transition-colors ${mobileView === "list" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}
+        >
+          <List size={14} /> {t("List view", "Vista de lista")}
+        </button>
       </div>
 
       {/* Map */}
-      <div ref={mapContainerRef} className="overflow-hidden rounded-xl border shadow-md" style={{ height: "450px", zIndex: 0 }} />
+      <div
+        ref={mapContainerRef}
+        className={`overflow-hidden rounded-xl border shadow-md ${mobileView === "list" ? "hidden sm:block" : ""}`}
+        style={{ height: "450px", zIndex: 0 }}
+      />
 
       {/* Legend */}
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+      <div className={`mt-3 flex flex-wrap gap-x-4 gap-y-1.5 ${mobileView === "list" ? "hidden sm:flex" : ""}`}>
         {Object.entries(categoryColors).map(([key, val]) => (
           <div key={key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="inline-block h-3 w-3 rounded-full" style={{ background: val.color }} />
@@ -251,7 +291,7 @@ const ResourceMap = () => {
       </div>
 
       {/* Card list */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+      <div className={`mt-6 grid gap-3 sm:grid-cols-2 ${mobileView === "map" ? "hidden sm:grid" : ""}`}>
         {filteredResources.map((r, i) => (
           <div key={i} className="rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
             <div className="mb-1 flex items-start justify-between gap-2">

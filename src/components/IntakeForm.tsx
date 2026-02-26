@@ -69,7 +69,7 @@ const IntakeForm = () => {
   };
 
   const canProceed = () => {
-    if (step === 1) return formData.province && formData.residenceStatus;
+    if (step === 1) return true; // Skip is allowed
     if (step === 2) return formData.categories.length > 0 && formData.severity;
     if (step === 3) return formData.description.trim().length > 10;
     return false;
@@ -82,7 +82,13 @@ const IntakeForm = () => {
   return (
     <div className="mx-auto max-w-2xl">
       <div className="rounded-xl border bg-card p-6 shadow-md md:p-8">
-        <h2 className="mb-2 text-2xl font-bold">{t("Scope Your Situation", "Define Tu Situación")}</h2>
+        <h2 className="mb-1 text-2xl font-bold">{t("Scope Your Situation", "Define Tu Situación")}</h2>
+        <p className="mb-4 text-xs text-muted-foreground">
+          {t(
+            "We ask this to show the right laws and local resources. Your info isn't stored.",
+            "Preguntamos esto para mostrarte las leyes y recursos locales correctos. Tu información no se almacena."
+          )}
+        </p>
 
         {/* Progress bar */}
         <div className="mb-8 flex items-center gap-2">
@@ -139,6 +145,14 @@ const IntakeForm = () => {
                 <Lock size={14} />
                 {t("Your information is confidential and never stored.", "Tu información es confidencial y nunca se almacena.")}
               </p>
+
+              <button
+                type="button"
+                onClick={() => setStep(step + 1)}
+                className="text-xs font-medium text-muted-foreground underline hover:text-foreground"
+              >
+                {t("Skip for now", "Saltar por ahora")}
+              </button>
             </motion.div>
           )}
 
