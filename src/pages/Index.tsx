@@ -57,7 +57,7 @@ const Index = () => {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt="Community belonging" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-foreground/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/60 to-foreground/80" />
         </div>
         <div className="relative container mx-auto px-4 py-20 md:py-32">
           <motion.div {...fadeIn} className="mx-auto max-w-3xl text-center">
@@ -78,7 +78,7 @@ const Index = () => {
               href="#intake"
               className="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-4 text-lg font-bold text-accent-foreground shadow-lg transition-transform hover:scale-105"
             >
-              {t("Get Help Now", "Obtén Ayuda Ahora")} <ArrowDown size={20} />
+              {t("Start My Action Plan", "Comenzar Mi Plan de Acción")} <ArrowDown size={20} />
             </a>
           </motion.div>
         </div>
@@ -126,6 +126,16 @@ const Index = () => {
       <section id="intake" className="container mx-auto px-4 pb-20">
         <IntakeForm />
       </section>
+
+      {/* Safety line */}
+      <div className="container mx-auto px-4 pb-4 text-center">
+        <p className="text-sm text-muted-foreground">
+          🚨 {t(
+            "In immediate danger, call 911. In crisis, call/text 988.",
+            "En peligro inmediato, llama al 911. En crisis, llama/envía mensaje al 988."
+          )}
+        </p>
+      </div>
 
       {/* AI Assistant */}
       <AIAssistant />

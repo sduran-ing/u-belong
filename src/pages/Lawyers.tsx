@@ -1,7 +1,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Search, Phone, MapPin, Mail } from "lucide-react";
+import { Search, Phone, MapPin, Mail, X } from "lucide-react";
 
 interface Lawyer {
   name: string;
@@ -10,6 +10,7 @@ interface Lawyer {
   languages: { label: string; flag: string }[];
   firm: string;
   location: string;
+  province: string;
   phone: string;
   email: string;
 }
@@ -22,6 +23,7 @@ const lawyers: Lawyer[] = [
     languages: [{ label: "English", flag: "🇨🇦" }, { label: "Spanish", flag: "🇪🇸" }],
     firm: "Garcia Law Professional Corp.",
     location: "Toronto, ON",
+    province: "ON",
     phone: "416-555-0123",
     email: "maria@garcialaw.ca",
   },
@@ -32,6 +34,7 @@ const lawyers: Lawyer[] = [
     languages: [{ label: "English", flag: "🇨🇦" }, { label: "Mandarin", flag: "🇨🇳" }],
     firm: "Chen & Associates",
     location: "Toronto, ON",
+    province: "ON",
     phone: "416-555-0456",
     email: "david@chenlaw.ca",
   },
@@ -42,6 +45,7 @@ const lawyers: Lawyer[] = [
     languages: [{ label: "English", flag: "🇨🇦" }, { label: "French", flag: "🇫🇷" }],
     firm: "Okafor Legal Services",
     location: "Ottawa, ON",
+    province: "ON",
     phone: "416-555-0789",
     email: "amara@okaforlaw.ca",
   },
@@ -52,6 +56,7 @@ const lawyers: Lawyer[] = [
     languages: [{ label: "English", flag: "🇨🇦" }, { label: "Spanish", flag: "🇪🇸" }, { label: "Portuguese", flag: "🇧🇷" }],
     firm: "Mendoza Immigration Law",
     location: "Vancouver, BC",
+    province: "BC",
     phone: "604-555-0321",
     email: "carlos@mendozalaw.ca",
   },
@@ -62,6 +67,7 @@ const lawyers: Lawyer[] = [
     languages: [{ label: "English", flag: "🇨🇦" }, { label: "French", flag: "🇫🇷" }],
     firm: "Al-Rashid & Partners",
     location: "Montréal, QC",
+    province: "QC",
     phone: "514-555-0654",
     email: "fatima@alrashidlaw.ca",
   },
@@ -72,12 +78,21 @@ const lawyers: Lawyer[] = [
     languages: [{ label: "English", flag: "🇨🇦" }, { label: "Spanish", flag: "🇪🇸" }],
     firm: "Alvarez Workplace Law",
     location: "Calgary, AB",
+    province: "AB",
     phone: "403-555-0987",
     email: "roberto@alvarezlaw.ca",
   },
 ];
 
 const specialties = ["All", "Immigration", "Human Rights", "Employment", "Disability", "Housing", "Family Law"];
+const languageOptions = ["All Languages", "English", "Spanish", "French", "Mandarin", "Portuguese"];
+const provinceOptions = [
+  { value: "All", label: "All Provinces" },
+  { value: "ON", label: "Ontario" },
+  { value: "BC", label: "British Columbia" },
+  { value: "QC", label: "Quebec" },
+  { value: "AB", label: "Alberta" },
+];
 
 const specialtyColors: Record<string, string> = {
   Immigration: "bg-primary/15 text-primary",
@@ -92,11 +107,24 @@ const Lawyers = () => {
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [langFilter, setLangFilter] = useState("All Languages");
+  const [provFilter, setProvFilter] = useState("All");
+
+  const hasActiveFilters = filter !== "All" || langFilter !== "All Languages" || provFilter !== "All" || search.length > 0;
+
+  const clearFilters = () => {
+    setFilter("All");
+    setLangFilter("All Languages");
+    setProvFilter("All");
+    setSearch("");
+  };
 
   const filtered = lawyers.filter((l) => {
     const matchesSearch = !search || l.name.toLowerCase().includes(search.toLowerCase()) || l.specializations.some((s) => s.toLowerCase().includes(search.toLowerCase()));
     const matchesFilter = filter === "All" || l.specializations.includes(filter);
-    return matchesSearch && matchesFilter;
+    const matchesLang = langFilter === "All Languages" || l.languages.some((lang) => lang.label === langFilter);
+    const matchesProv = provFilter === "All" || l.province === provFilter;
+    return matchesSearch && matchesFilter && matchesLang && matchesProv;
   });
 
   return (
@@ -112,31 +140,69 @@ const Lawyers = () => {
           )}
         </p>
 
-        {/* Specialty filter pills */}
-        <div className="mb-4 flex flex-wrap gap-2">
-          {specialties.map((spec) => (
-            <button
-              key={spec}
-              onClick={() => setFilter(spec)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                filter === spec ? "bg-primary text-primary-foreground" : "bg-muted text-foreground hover:bg-primary/10"
-              }`}
+        {/* Sticky filters */}
+        <div className="sticky top-16 z-10 -mx-4 bg-background px-4 pb-4 pt-2">
+          {/* Dropdowns row */}
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row">
+            <select
+              value={langFilter}
+              onChange={(e) => setLangFilter(e.target.value)}
+              className="rounded-xl border bg-card px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              {spec}
-            </button>
-          ))}
-        </div>
+              {languageOptions.map((l) => (
+                <option key={l} value={l}>{l}</option>
+              ))}
+            </select>
+            <select
+              value={provFilter}
+              onChange={(e) => setProvFilter(e.target.value)}
+              className="rounded-xl border bg-card px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {provinceOptions.map((p) => (
+                <option key={p.value} value={p.value}>{p.label}</option>
+              ))}
+            </select>
+          </div>
 
-        {/* Search */}
-        <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("Search by name or specialty", "Buscar por nombre o especialidad")}
-            className="w-full rounded-xl border bg-background py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          {/* Specialty filter pills */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            {specialties.map((spec) => (
+              <button
+                key={spec}
+                onClick={() => setFilter(spec)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  filter === spec ? "bg-primary text-primary-foreground" : "bg-muted text-foreground hover:bg-primary/10"
+                }`}
+              >
+                {spec}
+              </button>
+            ))}
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center gap-1 rounded-full border border-destructive/30 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
+              >
+                <X size={12} /> {t("Clear all", "Limpiar todo")}
+              </button>
+            )}
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("Search by name or specialty", "Buscar por nombre o especialidad")}
+              className="w-full rounded-xl border bg-background py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {/* Results count */}
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t(`Showing ${filtered.length} lawyers`, `Mostrando ${filtered.length} abogados`)}
+          </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-3">
