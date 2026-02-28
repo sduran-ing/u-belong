@@ -46,7 +46,7 @@ const About = () => {
         <div className="mb-10 grid gap-6 md:grid-cols-3">
           {teamMembers.map((m, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="rounded-xl border bg-card p-6 text-center shadow-sm">
-              <img src={m.photo} alt={m.name} className="mx-auto mb-4 h-20 w-20 rounded-full object-cover" />
+              <img src={m.photo} alt={m.name} className="mx-auto mb-4 h-32 w-32 rounded-full object-cover" />
               <h3 className="font-semibold">{m.name}</h3>
               <p className="mb-2 text-sm text-primary">{t(m.role, m.roleEs)}</p>
               <p className="text-xs text-muted-foreground">{t(m.bio, m.bioEs)}</p>
