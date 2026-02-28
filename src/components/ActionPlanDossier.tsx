@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Download, Mail, Phone, ExternalLink, Lock } from "lucide-react";
@@ -71,16 +72,29 @@ const STEPS = [
   },
 ];
 
+const printDossier = (el: HTMLElement | null) => {
+  if (!el) return;
+  const clone = el.cloneNode(true) as HTMLElement;
+  clone.id = "dossier-print-root";
+  document.body.classList.add("printing-dossier");
+  document.body.appendChild(clone);
+  window.print();
+  document.body.removeChild(clone);
+  document.body.classList.remove("printing-dossier");
+};
+
 const ActionPlanDossier = () => {
   const { t } = useLanguage();
+  const dossierRef = useRef<HTMLDivElement>(null);
 
-  const handleDownload = () => window.print();
+  const handleDownload = () => printDossier(dossierRef.current);
   const handleEmail = () => {
     window.location.href = "mailto:?subject=My%20U%20Belong%20Action%20Plan&body=Visit%20U%20Belong%20to%20generate%20your%20personalized%20action%20plan.";
   };
 
   return (
     <motion.div
+      ref={dossierRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

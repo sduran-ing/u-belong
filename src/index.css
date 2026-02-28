@@ -126,3 +126,17 @@
     text-wrap: balance;
   }
 }
+
+@media print {
+  body.printing-dossier > *:not(#dossier-print-root) {
+    display: none !important;
+  }
+  body.printing-dossier #dossier-print-root {
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
