@@ -3,11 +3,14 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import dianaPhoto from "@/assets/Diana.jpeg";
+import santiagoPhoto from "@/assets/Santiago.jpg";
+import davidPhoto from "@/assets/David.jpeg";
 
 const teamMembers = [
-  { name: "Team Member 1", role: "Lead Developer", roleEs: "Desarrollador Líder", bio: "Passionate about using technology to empower marginalized communities.", bioEs: "Apasionado por usar la tecnología para empoderar a comunidades marginalizadas.", initials: "TM" },
-  { name: "Team Member 2", role: "UX Designer", roleEs: "Diseñador UX", bio: "Designs inclusive digital experiences that bridge language and cultural barriers.", bioEs: "Diseña experiencias digitales inclusivas que conectan barreras de idioma y cultura.", initials: "TM" },
-  { name: "Team Member 3", role: "Research & Content", roleEs: "Investigación y Contenido", bio: "Ensures all legal information is accurate, accessible, and culturally sensitive.", bioEs: "Asegura que toda la información legal sea precisa, accesible y culturalmente sensible.", initials: "TM" },
+  { name: "Diana Mayorga", role: "Lead Developer", roleEs: "Desarrolladora Líder", bio: "Passionate about using technology to empower marginalized communities.", bioEs: "Apasionada por usar la tecnología para empoderar a comunidades marginalizadas.", photo: dianaPhoto },
+  { name: "Santiago Duran", role: "UX Designer", roleEs: "Diseñador UX", bio: "Designs inclusive digital experiences that bridge language and cultural barriers.", bioEs: "Diseña experiencias digitales inclusivas que conectan barreras de idioma y cultura.", photo: santiagoPhoto },
+  { name: "David Rocha", role: "Research & Content", roleEs: "Investigación y Contenido", bio: "Ensures all legal information is accurate, accessible, and culturally sensitive.", bioEs: "Asegura que toda la información legal sea precisa, accesible y culturalmente sensible.", photo: davidPhoto },
 ];
 
 const About = () => {
@@ -43,9 +46,7 @@ const About = () => {
         <div className="mb-10 grid gap-6 md:grid-cols-3">
           {teamMembers.map((m, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="rounded-xl border bg-card p-6 text-center shadow-sm">
-              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
-                {m.initials}
-              </div>
+              <img src={m.photo} alt={m.name} className="mx-auto mb-4 h-20 w-20 rounded-full object-cover" />
               <h3 className="font-semibold">{m.name}</h3>
               <p className="mb-2 text-sm text-primary">{t(m.role, m.roleEs)}</p>
               <p className="text-xs text-muted-foreground">{t(m.bio, m.bioEs)}</p>
