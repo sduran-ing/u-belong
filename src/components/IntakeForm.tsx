@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Lock, FileText, Phone, Download, Mail, Mic } from "lucide-react";
+import { ChevronDown, Lock, FileText, Phone, Download, Mail, Mic, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const provinces = [
@@ -598,7 +598,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
 
   // Build contextual action steps based on follow-up answers
   const getContextualSteps = () => {
-    const steps: { icon: string; title: string; desc: string }[] = [];
+    const steps: { icon: string; title: string; desc: string; timeframe: string; timeframeEs: string; timeColor: string }[] = [];
 
     // Urgent: safety first
     if (formData.severity === "urgent") {
@@ -606,6 +606,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
         icon: "🚨",
         title: t("Ensure your safety first", "Asegura tu seguridad primero"),
         desc: t("If you're in immediate danger, call 911. For crisis support, call/text 988.", "Si estás en peligro inmediato, llama al 911. Para apoyo en crisis, llama/envía mensaje al 988."),
+        timeframe: "Immediately", timeframeEs: "Inmediatamente", timeColor: "#D64045",
       });
     }
 
@@ -616,18 +617,21 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
         icon: "📝",
         title: t("Start documenting now", "Comienza a documentar ahora"),
         desc: t("Write down everything: dates, times, what was said, who was present. Save emails, texts, and screenshots. This will be your strongest evidence.", "Escribe todo: fechas, horas, lo que se dijo, quién estaba presente. Guarda correos, textos y capturas. Esta será tu evidencia más fuerte."),
+        timeframe: "Within 24 hours", timeframeEs: "Dentro de 24 horas", timeColor: "#E9C46A",
       });
     } else if (priorAction.includes("complaint")) {
       steps.push({
         icon: "📋",
         title: t("Organize your existing documentation", "Organiza tu documentación existente"),
         desc: t("Gather all complaint records, responses, and correspondence in one place. Note any reference numbers.", "Reúne todos los registros de quejas, respuestas y correspondencia en un solo lugar. Anota los números de referencia."),
+        timeframe: "Within 24 hours", timeframeEs: "Dentro de 24 horas", timeColor: "#E9C46A",
       });
     } else {
       steps.push({
         icon: "📝",
         title: t("Document everything", "Documenta todo"),
         desc: t("Save emails, texts, take notes with dates and names of witnesses.", "Guarda correos, mensajes, toma notas con fechas y nombres de testigos."),
+        timeframe: "Within 24 hours", timeframeEs: "Dentro de 24 horas", timeColor: "#E9C46A",
       });
     }
 
@@ -641,12 +645,14 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
           icon: "💰",
           title: t("File a wage claim", "Presenta un reclamo salarial"),
           desc: t(`File a claim with the ${formData.province || "Provincial"} Ministry of Labour. Keep records of hours worked, pay stubs, and any agreements.`, `Presenta un reclamo ante el Ministerio de Trabajo de ${formData.province || "tu provincia"}. Guarda registros de horas trabajadas, recibos de pago y acuerdos.`),
+          timeframe: "Within 48 hours", timeframeEs: "Dentro de 48 horas", timeColor: "#E9C46A",
         });
       } else if (workType.includes("Unsafe")) {
         steps.push({
           icon: "⚠️",
           title: t("Report to Occupational Health & Safety", "Reporta a Salud y Seguridad Ocupacional"),
           desc: t("You can file a complaint anonymously. Your employer cannot retaliate against you for reporting unsafe conditions.", "Puedes presentar una queja anónima. Tu empleador no puede tomar represalias contra ti por reportar condiciones inseguras."),
+          timeframe: "Within 48 hours", timeframeEs: "Dentro de 48 horas", timeColor: "#E9C46A",
         });
       } else if (workType.includes("Wrongful dismissal")) {
         steps.push({
@@ -655,6 +661,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
           desc: hasContract.includes("Yes")
             ? t("Review your contract for termination clauses. You may be entitled to more than minimum notice.", "Revisa tu contrato para cláusulas de terminación. Podrías tener derecho a más que el preaviso mínimo.")
             : t("Even without a written contract, you have rights to notice or severance pay under employment standards.", "Incluso sin contrato escrito, tienes derechos a preaviso o indemnización bajo las normas de empleo."),
+          timeframe: "Within 48 hours", timeframeEs: "Dentro de 48 horas", timeColor: "#E9C46A",
         });
       }
     }
@@ -666,12 +673,14 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
           icon: "📄",
           title: t("Request the denial in writing", "Solicita la denegación por escrito"),
           desc: t("Ask for the written reason for denial. Your employer/institution must explain why accommodation creates undue hardship.", "Pide la razón escrita de la denegación. Tu empleador/institución debe explicar por qué la adaptación crea dificultad excesiva."),
+          timeframe: "Within 48 hours", timeframeEs: "Dentro de 48 horas", timeColor: "#E9C46A",
         });
       } else if (request.includes("don't know how")) {
         steps.push({
           icon: "✉️",
           title: t("Submit a formal accommodation request", "Presenta una solicitud formal de adaptación"),
           desc: t("Write a letter or email describing the barriers you face and the accommodations you need. You don't need to disclose your full diagnosis — only functional limitations.", "Escribe una carta o correo describiendo las barreras que enfrentas y las adaptaciones que necesitas. No necesitas revelar tu diagnóstico completo — solo las limitaciones funcionales."),
+          timeframe: "Within 1 week", timeframeEs: "Dentro de 1 semana", timeColor: "#2A9D8F",
         });
       }
     }
@@ -681,6 +690,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
       icon: "📋",
       title: t("File a formal complaint", "Presenta una queja formal"),
       desc: t(`File with the ${formData.province || "Provincial"} Human Rights Commission or Tribunal. It's free and you have 1 year from the incident.`, `Presenta ante la Comisión o Tribunal de Derechos Humanos de ${formData.province || "tu provincia"}. Es gratuito y tienes 1 año desde el incidente.`),
+      timeframe: "Within 2 weeks", timeframeEs: "Dentro de 2 semanas", timeColor: "#2A9D8F",
     });
 
     // Legal help
@@ -688,6 +698,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
       icon: "📞",
       title: t("Contact a legal clinic", "Contacta una clínica legal"),
       desc: t("Reach out to a community legal clinic for free help. Many offer services in Spanish.", "Comunícate con una clínica legal comunitaria para ayuda gratuita. Muchas ofrecen servicios en español."),
+      timeframe: "Within 2 weeks", timeframeEs: "Dentro de 2 semanas", timeColor: "#2A9D8F",
     });
 
     // Timeline-based follow-up
@@ -697,12 +708,14 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
         icon: "⏰",
         title: t("Act quickly — deadline approaching", "Actúa rápido — fecha límite acercándose"),
         desc: t("Most human rights complaints must be filed within 1 year. With 6+ months passed, prioritize filing soon.", "La mayoría de las quejas de derechos humanos deben presentarse dentro de 1 año. Con más de 6 meses pasados, prioriza presentarla pronto."),
+        timeframe: "ASAP", timeframeEs: "Lo antes posible", timeColor: "#D64045",
       });
     } else {
       steps.push({
         icon: "⏰",
-        title: t("Follow up within 2 weeks", "Da seguimiento en 2 semanas"),
+        title: t("Follow up & track progress", "Da seguimiento y registra el progreso"),
         desc: t("Keep records of all communications and follow up regularly.", "Mantén registros de todas las comunicaciones y da seguimiento regularmente."),
+        timeframe: "Ongoing", timeframeEs: "Continuo", timeColor: "#6BA368",
       });
     }
 
@@ -743,21 +756,37 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
         <p className="text-sm text-muted-foreground">{sev.note}</p>
       </div>
 
-      {/* Action Plan */}
-      <div className="rounded-xl border bg-card p-6 shadow-md">
-        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">🗺️ {t("Your Action Plan", "Tu Plan de Acción")}</h3>
-        <div className="space-y-4">
+      {/* Action Plan — Timeline Style */}
+      <div className="rounded-xl border bg-card p-6 shadow-md md:p-8">
+        <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold">🗺️ {t("Your Action Plan", "Tu Plan de Acción")}</h3>
+        <div className="relative ml-4 border-l-2 border-primary/30 pl-8">
           {steps.map((s, i) => (
-            <div key={i} className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{i + 1}</div>
-                {i < steps.length - 1 && <div className="mt-1 h-full w-0.5 bg-border" />}
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 * i, duration: 0.4 }}
+              className="relative mb-8 last:mb-0"
+            >
+              {/* Node */}
+              <div className="absolute -left-[2.55rem] flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                {i + 1}
               </div>
-              <div className="pb-4">
-                <p className="font-semibold">{s.icon} {s.title}</p>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
+
+              {/* Content */}
+              <div>
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <h4 className="font-bold">{s.icon} {s.title}</h4>
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-white"
+                    style={{ backgroundColor: s.timeColor }}
+                  >
+                    ⏱️ {t(s.timeframe, s.timeframeEs)}
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -765,20 +794,20 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
       {/* Key Contacts */}
       <div className="rounded-xl border bg-card p-6 shadow-md">
         <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">📞 {t("Key Contacts", "Contactos Clave")}</h3>
-        <div className="space-y-3">
+        <div className="grid gap-2 sm:grid-cols-3">
           {contacts.map((c, i) => (
-            <div key={i} className="rounded-xl border p-4 transition-colors hover:bg-muted">
-              <p className="font-semibold">{c.name}</p>
-              <p className="text-sm text-muted-foreground">{c.desc}</p>
-              <div className="mt-2 flex flex-wrap gap-3 text-sm">
+            <div key={i} className="flex flex-col rounded-lg border bg-background p-3 text-xs transition-colors hover:border-primary">
+              <span className="font-semibold">{c.name}</span>
+              <span className="mt-1 text-muted-foreground">{c.desc}</span>
+              <div className="mt-2 flex flex-wrap gap-2">
                 {c.phone && (
-                  <a href={`tel:${c.phone}`} className="flex items-center gap-1 text-primary hover:underline">
-                    <Phone size={14} /> {c.phone}
+                  <a href={`tel:${c.phone}`} className="text-primary hover:underline">
+                    {c.phone}
                   </a>
                 )}
                 {c.url && (
-                  <a href={c.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
-                    🌐 {t("Website", "Sitio Web")}
+                  <a href={c.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <ExternalLink size={10} /> {t("Website", "Sitio Web")}
                   </a>
                 )}
               </div>
@@ -787,14 +816,35 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
         </div>
       </div>
 
-      {/* Download/Share */}
-      <div className="flex flex-wrap gap-3">
-        <button className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
-          <Download size={16} /> {t("Download as PDF", "Descargar como PDF")}
-        </button>
-        <button className="flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-muted">
-          <Mail size={16} /> {t("Share via Email", "Compartir por Email")}
-        </button>
+      {/* Footer Actions */}
+      <div className="border-t pt-6">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={() => window.print()}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-primary px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+          >
+            <Download size={16} /> {t("Download as PDF", "Descargar como PDF")}
+          </button>
+          <button
+            onClick={() => { window.location.href = "mailto:?subject=My%20U%20Belong%20Action%20Plan&body=Visit%20U%20Belong%20to%20generate%20your%20personalized%20action%20plan."; }}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-primary px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+          >
+            <Mail size={16} /> {t("Email This Plan", "Enviar por Correo")}
+          </button>
+          <a
+            href="tel:18665980322"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-2.5 text-sm font-bold text-destructive-foreground transition-transform hover:scale-105"
+          >
+            <Phone size={16} /> {t("Call for Help Now", "Llama por Ayuda Ahora")}
+          </a>
+        </div>
+        <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+          <Lock size={12} />
+          {t(
+            "This plan is not stored. We do not save any personal information.",
+            "Este plan no se almacena. No guardamos ninguna información personal."
+          )}
+        </p>
       </div>
     </motion.div>
   );
