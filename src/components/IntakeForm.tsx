@@ -731,7 +731,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-2xl space-y-6">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl space-y-6">
       <button onClick={onBack} className="mb-2 text-sm font-medium text-primary hover:underline">
         ← {t("Back to form", "Volver al formulario")}
       </button>
