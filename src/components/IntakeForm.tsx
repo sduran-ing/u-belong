@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Lock, FileText, Phone, Download, Mail, Mic, ExternalLink } from "lucide-react";
@@ -473,8 +473,20 @@ const IntakeForm = () => {
 };
 
 // Action Dossier Component
+const printDossier = (el: HTMLElement | null) => {
+  if (!el) return;
+  const clone = el.cloneNode(true) as HTMLElement;
+  clone.id = "dossier-print-root";
+  document.body.classList.add("printing-dossier");
+  document.body.appendChild(clone);
+  window.print();
+  document.body.removeChild(clone);
+  document.body.classList.remove("printing-dossier");
+};
+
 const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () => void }) => {
   const { t } = useLanguage();
+  const dossierRef = useRef<HTMLDivElement>(null);
 
   const getCaseDiagnosis = () => {
     const answers = formData.followUpAnswers;
@@ -731,7 +743,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl space-y-6">
+    <motion.div ref={dossierRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl space-y-6">
       <button onClick={onBack} className="mb-2 text-sm font-medium text-primary hover:underline">
         ← {t("Back to form", "Volver al formulario")}
       </button>
@@ -820,7 +832,7 @@ const ActionDossier = ({ formData, onBack }: { formData: FormData; onBack: () =>
       <div className="border-t pt-6">
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
-            onClick={() => window.print()}
+            onClick={() => printDossier(dossierRef.current)}
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-primary px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
           >
             <Download size={16} /> {t("Download as PDF", "Descargar como PDF")}
